@@ -1,5 +1,14 @@
 {
+  "scripts": {
+    "start": "./node_modules/.bin/parcel src/index.html",
+    "build": "./node_modules/.bin/parcel build src/index.html"
+  },
   "devDependencies": {
+    "parcel": "^1.12.4",
     "typescript": "^3.8.3"
+  },
+  "dependencies": {
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1"
   }
 }
