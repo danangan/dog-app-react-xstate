@@ -29,7 +29,7 @@ export default function App() {
           />
           <button className="border bg-indigo-700 p-3 text-white rounded" onClick={send.bind(null, ['FETCH_DOG'])}>Get the dog!</button>
         </div>
-        <div className="overflow-hidden rounded" style={{maxHeight: '320px'}}>
+        <div className="overflow-hidden rounded" style={{maxHeight: '310px'}}>
           {
             state.context.dogImage &&
             <img className="width-100 max-h-full rounded" alt="dog image" src={state.context.dogImage}/>
@@ -57,10 +57,10 @@ function AppLoader() {
 function AppContainer(props) {
   return (
     <div className="h-screen flex flex-row justify-center items-center">
-      <div style={{width: "420px", height: "500px"}} className="border shadow p-4 rounded-lg">
+      <div style={{height: "500px"}} className="border shadow p-4 rounded-lg w-5/6 sm:w-3/4 md:w-1/2 lg:w-2/5 xl:w-2/6">
         <h1 className="font-mono font-extrabold text-3xl text-indigo-700">Dog App</h1>
         <h2 className="text-gray-600 text-light mb-3">Made with React + XState</h2>
-        <div className="bg-indigo-700 h-1 w-full mb-3 rounded"/>
+        <div className="bg-indigo-700 h-1 w-full mb-3 rounded" />
         {props.children}
       </div>
     </div>
