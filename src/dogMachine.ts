@@ -4,9 +4,9 @@ const fetchBreedList = () => {
     return fetch('https://dog.ceo/api/breeds/list/all');
 };
 
-const fetchDogBasedOnBreed = (breed: string) => fetch(`https://dog.ceo/api/breed/${breed}/images/random`)
-
 const fetchRandomDogBreed = () => fetch('https://dog.ceo/api/breeds/image/random');
+
+const fetchDogBasedOnBreed = (breed: string) => fetch(`https://dog.ceo/api/breed/${breed}/images/random`)
 
 const waitForXmSPromise = (mS) => new Promise(resolve => setTimeout(resolve, mS));
 
