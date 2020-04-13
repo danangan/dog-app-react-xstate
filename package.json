@@ -1,6 +1,7 @@
 {
   "scripts": {
     "start": "./node_modules/.bin/parcel src/index.html",
+    "prettier": "prettier ./src/*",
     "build": "rm -rf dist && ./node_modules/.bin/parcel build src/index.html --public-url ./ && rm -f docs/* && cp -r ./dist/* ./docs"
   },
   "devDependencies": {
@@ -22,5 +23,11 @@
     "hooks": {
       "pre-commit": "yarn build && git add ."
     }
+  },
+  "prettier": {
+    "trailingComma": "es5",
+    "tabWidth": 2,
+    "semi": false,
+    "singleQuote": true
   }
 }

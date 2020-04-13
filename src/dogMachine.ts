@@ -14,60 +14,70 @@ const waitForOneSecond = waitForXmSPromise.bind(null, 1000);
 
 const waitForMinimumCompletionOfOneSecond = (promise) => Promise.all([promise, waitForOneSecond()]).then(res => res[0]);
 
-const fetchDogBasedOnBreedButWithMinimumResolveOfOneSecond = (filter: string) => waitForMinimumCompletionOfOneSecond(fetchDogBasedOnBreed(filter));
-
 const dogMachine = createMachine(
-    {
-        initial: 'loadingBreedList',
+  {
+      id: 'dogApp',
+        initial: 'loading',
         context: {
             filter: "",
             dogBreeds : null,
             dogImage: null,
         },
         states: {
-            loadingBreedList: {
-                invoke: {
-                    id: 'fetchBreedList',
-                    src: () => fetchBreedList().then(res => res.json()),
-                    onDone: {
-                        actions: ['assignDogBreeds']
-                    },
-                    onError: {
-                        target: 'error',
-                    }
-                },
-                after: {
-                  1000: {
-                    target: 'idle',
-                    cond: (context) => context.dogBreeds !== null
-                  }
-                }
-            },
             idle: {
                 on: {
-                    FETCH_DOG: 'loading',
+                    FETCH_DOG: 'loading.image',
                     UPDATE_FILTER: {
                         actions: ['updateFilter']
                     }
                 }
             },
             loading: {
-                invoke: {
-                    id: 'fetchDogImage',
-                    src: (context) => {
+                initial: 'breeds',
+                states: {
+                  breeds: {
+                    meta: {
+                      message: 'Fetching breeds list...'
+                    },
+                    invoke: {
+                      src: () => fetchBreedList().then(res => res.json()),
+                      onDone: {
+                        actions: ['assignDogBreeds']
+                      },
+                      onError: {
+                        target: '#dogApp.error',
+                      }
+                    },
+                    after: {
+                      1000: {
+                        target: '#dogApp.idle',
+                        cond: (context) => context.dogBreeds !== null
+                      }
+                    }
+                  },
+                  image: {
+                    meta: {
+                      message: 'Fetching the dog image...'
+                    },
+                    invoke: {
+                      id: 'fetchDogImage',
+                      src: (context) => {
                         if (context.filter) {
-                            return fetchDogBasedOnBreedButWithMinimumResolveOfOneSecond(context.filter).then(res => res.json())
+                          return waitForMinimumCompletionOfOneSecond(fetchDogBasedOnBreed(context.filter)).then(res => res.json())
                         } else {
-                            return fetchRandomDogBreed().then(res => res.json())
+                          return waitForMinimumCompletionOfOneSecond(fetchRandomDogBreed()).then(res => res.json())
                         }
-                    },
-                    onDone: {
+                      },
+                      onDone: {
                         actions: ['assignDogImage'],
-                        target: 'idle'
+                        target: '#dogApp.idle',
+                      },
+                      onError: {
+                        target: '#dogApp.error',
+                        internal: false,
+                      },
                     },
-                    onError: {
-                        target: 'error',
-                    },
+                  }
                 },
             },
             error: {
@@ -78,12 +88,16 @@ const dogMachine = createMachine(
         },
     }, {
         actions: {
-            assignDogBreeds: assign((context, event: any) => ({
+            assignDogBreeds: assign((context, event: any) => {
+              return {
                 dogBreeds: event.data.message
-            })),
-            assignDogImage: assign((context, event: any) => ({
+              }
+            }),
+            assignDogImage: assign((context, event: any) => {
+              return {
                 dogImage: event.data.message
-            })),
+              }
+            }),
             updateFilter: assign((context, event: any) => {
                 return {
                     filter: event.data

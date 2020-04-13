@@ -2,17 +2,20 @@ import React from 'react';
 import { useMachine } from '@xstate/react';
 import dogMachine from "./dogMachine";
 import {GenericLoader} from './GenericLoader';
+import {mergeMeta} from "./helper";
+
 
 export default function App() {
   const [state, send] = useMachine(dogMachine, {devTools: true});
 
   let content;
   switch (true) {
-    case state.matches('loadingBreedList'):
+    case state.matches('loading'):
+      const meta: any = mergeMeta(state.meta);
       content = (
-        <div className>
-          <span>Preparing your dog breed list...</span>
+        <div className="flex items-center mt-3">
           <AppLoader />
+          <span className="ml-3 text-gray-600">{meta.message}</span>
         </div>
       );
       break;
@@ -26,14 +29,13 @@ export default function App() {
           />
           <button className="border bg-indigo-700 p-3 text-white rounded" onClick={send.bind(null, ['FETCH_DOG'])}>Get the dog!</button>
         </div>
-        {
-          state.context.dogImage &&
-          <img className="width-100 rounded" alt="dog image" src={state.context.dogImage}/>
-        }
+        <div className="overflow-hidden rounded" style={{maxHeight: '320px'}}>
+          {
+            state.context.dogImage &&
+            <img className="width-100 max-h-full rounded" alt="dog image" src={state.context.dogImage}/>
+          }
+        </div>
       </>;
-      break;
-    case state.matches('loading'):
-      content = <AppLoader />;
       break;
     default:
       content = <div>default content</div>;
@@ -56,8 +58,9 @@ function AppContainer(props) {
   return (
     <div className="h-screen flex flex-row justify-center items-center">
       <div style={{width: "420px", height: "500px"}} className="border shadow p-4 rounded-lg">
-        <h1 className="font-mono font-extrabold text-3xl">Dog App</h1>
-        <h2 className="text-gray-700 text-light mb-4">Made with React + XState</h2>
+        <h1 className="font-mono font-extrabold text-3xl text-indigo-700">Dog App</h1>
+        <h2 className="text-gray-600 text-light mb-3">Made with React + XState</h2>
+        <div className="bg-indigo-700 h-1 w-full mb-3 rounded"/>
         {props.children}
       </div>
     </div>
@@ -68,7 +71,7 @@ function BreedOption({breeds, onChange, value, ...restProps}) {
     const mainBreeds = Object.keys(breeds);
     return (
         <select className="border" onChange={onChange} value={value} {...restProps}>
-            <option value="">Random</option>
+            <option value="">random</option>
             {
                 mainBreeds.map(breed => (
                     <option value={breed} key={breed}>{breed}</option>
