@@ -4,20 +4,24 @@ const fetchBreedList = () => {
     return fetch('https://dog.ceo/api/breeds/list/all');
 };
 
-const fetchDogBasedOnBreed = (breed: string) => {
-    return fetch(`https://dog.ceo/api/breed/${breed}/images/random`);
-};
+const fetchDogBasedOnBreed = (breed: string) => fetch(`https://dog.ceo/api/breed/${breed}/images/random`)
 
-const fetchRandomDogBreed = () => {
-    return fetch('https://dog.ceo/api/breeds/image/random');
-};
+const fetchRandomDogBreed = () => fetch('https://dog.ceo/api/breeds/image/random');
+
+const waitForXmSPromise = (mS) => new Promise(resolve => setTimeout(resolve, mS));
+
+const waitForOneSecond = waitForXmSPromise.bind(null, 1000);
+
+const waitForMinimumCompletionOfOneSecond = (promise) => Promise.all([promise, waitForOneSecond()]).then(res => res[0]);
+
+const fetchDogBasedOnBreedButWithMinimumResolveOfOneSecond = (filter: string) => waitForMinimumCompletionOfOneSecond(fetchDogBasedOnBreed(filter));
 
 const dogMachine = createMachine(
     {
         initial: 'loadingBreedList',
         context: {
-            filter: null,
-            dogBreeds : {},
+            filter: "",
+            dogBreeds : null,
             dogImage: null,
         },
         states: {
@@ -26,12 +30,17 @@ const dogMachine = createMachine(
                     id: 'fetchBreedList',
                     src: () => fetchBreedList().then(res => res.json()),
                     onDone: {
-                        target: 'idle',
                         actions: ['assignDogBreeds']
                     },
                     onError: {
                         target: 'error',
                     }
+                },
+                after: {
+                  1000: {
+                    target: 'idle',
+                    cond: (context) => context.dogBreeds !== null
+                  }
                 }
             },
             idle: {
@@ -44,22 +53,22 @@ const dogMachine = createMachine(
             },
             loading: {
                 invoke: {
-                    id: 'fethDogImage',
+                    id: 'fetchDogImage',
                     src: (context) => {
-                        if (context.filter !== null) {
-                            return fetchDogBasedOnBreed(context.filter).then(res => res.json())
+                        if (context.filter) {
+                            return fetchDogBasedOnBreedButWithMinimumResolveOfOneSecond(context.filter).then(res => res.json())
                         } else {
                             return fetchRandomDogBreed().then(res => res.json())
                         }
                     },
                     onDone: {
-                        target: 'idle',
-                        actions: ['assignDogImage']
+                        actions: ['assignDogImage'],
+                        target: 'idle'
                     },
                     onError: {
                         target: 'error',
-                    }
-                }
+                    },
+                },
             },
             error: {
                 on: {
