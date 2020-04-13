@@ -1,7 +1,7 @@
 {
   "scripts": {
     "start": "./node_modules/.bin/parcel src/index.html",
-    "build": "./node_modules/.bin/parcel build src/index.html"
+    "build": "rm -rf dist && ./node_modules/.bin/parcel build src/index.html && rm -f docs/* && cp -r ./dist/* ./docs"
   },
   "devDependencies": {
     "parcel": "^1.12.4",
