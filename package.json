@@ -2,7 +2,12 @@
   "scripts": {
     "start": "./node_modules/.bin/parcel src/index.html",
     "prettier": "prettier ./src/*",
-    "build": "rm -rf dist && ./node_modules/.bin/parcel build src/index.html --public-url ./ && rm -f docs/* && cp -r ./dist/* ./docs"
+    "build": "rm -rf dist && parcel build src/index.html --public-url ./ && rm -f docs/* && cp -r ./dist/* ./docs"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "yarn build && git add ."
+    }
   },
   "devDependencies": {
     "husky": "^4.2.5",
@@ -18,11 +23,6 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "xstate": "^4.8.0"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "yarn build && git add ."
-    }
   },
   "prettier": {
     "trailingComma": "es5",
