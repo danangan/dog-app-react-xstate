@@ -21,13 +21,14 @@ export default function App() {
       break;
     case state.matches('idle'):
       content = <>
+        <h3 className="mb-2">Choose your favorite dog breed!</h3>
         <div className="flex flex-row mb-2">
           <BreedOption
             className="flex-1 outline-none border px-2 mr-1"
             value={state.context.filter} breeds={state.context.dogBreeds}
             onChange={e => send('UPDATE_FILTER', {data: e.target.value})}
           />
-          <button className="border bg-indigo-700 p-3 text-white rounded" onClick={send.bind(null, ['FETCH_DOG'])}>Get the dog!</button>
+          <button className="border bg-indigo-700 p-3 text-white rounded" onClick={send.bind(null, ['FETCH_DOG'])}>Fetch!</button>
         </div>
         <div className="overflow-hidden rounded" style={{maxHeight: '310px'}}>
           {
@@ -58,9 +59,9 @@ function AppContainer(props) {
   return (
     <div className="h-screen flex flex-row justify-center items-center">
       <div style={{height: "500px"}} className="border shadow p-4 rounded-lg w-5/6 sm:w-3/4 md:w-1/2 lg:w-2/5 xl:w-2/6">
-        <h1 className="font-mono font-extrabold text-3xl text-indigo-700">Dog App</h1>
-        <h2 className="text-gray-600 text-light mb-3">Made with React + XState</h2>
-        <div className="bg-indigo-700 h-1 w-full mb-3 rounded" />
+        <h1 className="font-mono font-extrabold text-3xl">Who's A Good Boy App</h1>
+        <h2 className="text-gray-600 text-light mb-3">Made with React + XState, using <a href="https://dog.ceo/">dog.ceo</a> public API</h2>
+        <div className="bg-gray-700 h-1 w-full mb-5 rounded" />
         {props.children}
       </div>
     </div>
@@ -71,7 +72,7 @@ function BreedOption({breeds, onChange, value, ...restProps}) {
     const mainBreeds = Object.keys(breeds);
     return (
         <select className="border" onChange={onChange} value={value} {...restProps}>
-            <option value="">random</option>
+            <option value="">Nah, all dogs are good boyes</option>
             {
                 mainBreeds.map(breed => (
                     <option value={breed} key={breed}>{breed}</option>

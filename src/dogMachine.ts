@@ -42,18 +42,19 @@ const dogMachine = createMachine(
                     invoke: {
                       src: () => fetchBreedList().then(res => res.json()),
                       onDone: {
-                        actions: ['assignDogBreeds']
+                        actions: ['assignDogBreeds'],
+                        target: '#dogApp.idle',
                       },
                       onError: {
                         target: '#dogApp.error',
                       }
                     },
-                    after: {
-                      1000: {
-                        target: '#dogApp.idle',
-                        cond: (context) => context.dogBreeds !== null
-                      }
-                    }
+                    // after: {
+                    //   1000: {
+                    //     target: '#dogApp.idle',
+                    //     cond: (context) => context.dogBreeds !== null
+                    //   }
+                    // }
                   },
                   image: {
                     meta: {
